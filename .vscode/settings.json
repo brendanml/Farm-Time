@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.ejs": "html",
+        "__node_handle": "cpp",
+        "deque": "cpp"
+    }
+}
