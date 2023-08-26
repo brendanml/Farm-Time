@@ -6,9 +6,20 @@
 #include <raymath.h>
 using namespace std;    
 
-int cellSize = 32;
-int cellVertical = 24;
-int cellHorizontal = 26;
+int cellSize = 16;
+int cellVertical = 48;
+int cellHorizontal = 48;
+double currentTime = 0;
+double lastUpdateTime = 0;
+
+bool TimePassed(double interval) {
+    double currentTime = GetTime();
+    if(currentTime-lastUpdateTime>=interval) {
+        lastUpdateTime = currentTime;
+        return true;
+    }
+    return false;
+}
 
 class Grass {
     public:
@@ -21,31 +32,31 @@ class Grass {
     Texture grassTextureThree;
     Texture tree1Text;
 
-    int grassMap[24][26] = {
-        {0, 2, 1, 1, 0, 2, 1, 2, 2, 0, 1, 0, 0, 1, 1, 2, 0, 2, 1, 0, 0, 1, 0, 2,1, 1},
-        {1, 1, 0, 0, 1, 1, 0, 2, 0, 1, 0, 1, 2, 0, 2, 1, 2, 2, 0, 1, 0, 0, 1, 2,1, 1},
-        {0, 2, 2, 0, 2, 1, 2, 1, 2, 0, 2, 0, 2, 1, 2, 0, 1, 2, 1, 0, 2, 0, 2, 0,1, 1},
-        {2, 1, 1, 0, 2, 0, 1, 2, 0, 0, 1, 2, 2, 1, 2, 0, 2, 2, 1, 0, 2, 0, 1, 1,1, 1},
-        {1, 1, 2, 2, 0, 0, 0, 0, 2, 1, 2, 1, 0, 2, 1, 2, 0, 1, 2, 0, 2, 0, 2, 2,1, 1},
-        {2, 0, 1, 1, 2, 2, 1, 1, 0, 0, 1, 1, 2, 1, 0, 2, 0, 2, 1, 1, 2, 0, 0, 2,1, 1},
-        {1, 1, 2, 0, 2, 2, 1, 2, 0, 0, 1, 1, 2, 2, 2, 0, 1, 1, 0, 2, 2, 0, 0, 2,1, 1},
-        {2, 0, 2, 1, 2, 1, 2, 2, 1, 0, 1, 1, 0, 0, 2, 0, 2, 1, 2, 1, 0, 0, 1, 1,1, 1},
-        {1, 1, 0, 0, 0, 0, 2, 1, 1, 2, 1, 0, 0, 0, 1, 2, 1, 2, 0, 2, 0, 1, 1, 0,1, 1},
-        {0, 0, 1, 1, 0, 2, 2, 2, 2, 1, 2, 1, 1, 0, 1, 0, 1, 1, 1, 2, 0, 0, 2, 1,1, 1},
-        {2, 0, 0, 2, 1, 1, 2, 2, 1, 0, 2, 0, 0, 0, 0, 1, 2, 1, 2, 0, 0, 1, 0, 0,1, 1},
-        {0, 2, 0, 2, 1, 1, 1, 1, 2, 1, 1, 0, 2, 2, 1, 2, 0, 2, 2, 1, 1, 0, 0, 1,1, 1},
-        {1, 0, 2, 1, 0, 2, 1, 0, 0, 2, 0, 1, 1, 0, 1, 2, 1, 2, 0, 1, 0, 2, 2, 2,1, 1},
-        {1, 1, 0, 1, 0, 2, 1, 0, 0, 2, 1, 1, 2, 1, 0, 1, 1, 2, 2, 0, 0, 2, 1, 0,1, 1},
-        {2, 1, 0, 2, 1, 2, 2, 0, 1, 0, 1, 0, 2, 2, 0, 1, 0, 2, 1, 1, 0, 1, 2, 0,1, 1},
-        {0, 2, 1, 2, 1, 1, 1, 0, 2, 0, 0, 0, 1, 0, 1, 1, 1, 2, 0, 2, 1, 1, 0, 0,1, 1},
-        {0, 1, 0, 1, 0, 0, 1, 2, 1, 0, 2, 2, 0, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 1,1, 1},
-        {1, 2, 2, 1, 0, 1, 2, 2, 0, 0, 1, 2, 2, 1, 1, 0, 0, 2, 0, 0, 1, 2, 2, 0,1, 1},
-        {0, 2, 1, 1, 0, 0, 2, 0, 2, 0, 2, 1, 2, 2, 0, 1, 2, 0, 2, 0, 1, 0, 2, 1,1, 1},
-        {2, 1, 1, 0, 0, 0, 1, 2, 0, 2, 1, 0, 2, 1, 0, 1, 2, 1, 0, 0, 1, 2, 2, 2,1, 1},
-        {2, 0, 1, 2, 1, 1, 0, 1, 1, 2, 2, 0, 0, 2, 0, 1, 0, 0, 1, 1, 0, 2, 0, 1,1, 1},
-        {1, 0, 1, 0, 2, 2, 0, 1, 1, 0, 2, 1, 0, 0, 1, 2, 1, 2, 0, 1, 2, 0, 0, 2,1, 1},
-        {0, 2, 1, 0, 2, 2, 2, 0, 2, 1, 1, 1, 2, 0, 0, 1, 2, 1, 0, 1, 2, 1, 1, 0,1, 1},
-        {1, 0, 2, 0, 1, 1, 0, 0, 0, 1, 1, 0, 2, 0, 0, 1, 1, 0, 1, 2, 0, 0, 1, 1,1, 1}
+    int grassMap[24][24] = {
+        {0, 2, 1, 1, 0, 2, 1, 2, 2, 0, 1, 0, 0, 1, 1, 2, 0, 2, 1, 0, 0, 1, 0, 2},
+        {1, 1, 0, 0, 1, 1, 0, 2, 0, 1, 0, 1, 2, 0, 2, 1, 2, 2, 0, 1, 0, 0, 1, 2},
+        {0, 2, 2, 0, 2, 1, 2, 1, 2, 0, 2, 0, 2, 1, 2, 0, 1, 2, 1, 0, 2, 0, 2, 0},
+        {2, 1, 1, 0, 2, 0, 1, 2, 0, 0, 1, 2, 2, 1, 2, 0, 2, 2, 1, 0, 2, 0, 1, 1},
+        {1, 1, 2, 2, 0, 0, 0, 0, 2, 1, 2, 1, 0, 2, 1, 2, 0, 1, 2, 0, 2, 0, 2, 2},
+        {2, 0, 1, 1, 2, 2, 1, 1, 0, 0, 1, 1, 2, 1, 0, 2, 0, 2, 1, 1, 2, 0, 0, 2},
+        {1, 1, 2, 0, 2, 2, 1, 2, 0, 0, 1, 1, 2, 2, 2, 0, 1, 1, 0, 2, 2, 0, 0, 2},
+        {2, 0, 2, 1, 2, 1, 2, 2, 1, 0, 1, 1, 0, 0, 2, 0, 2, 1, 2, 1, 0, 0, 1, 1},
+        {1, 1, 0, 0, 0, 0, 2, 1, 1, 2, 1, 0, 0, 0, 1, 2, 1, 2, 0, 2, 0, 1, 1, 0},
+        {0, 0, 1, 1, 0, 2, 2, 2, 2, 1, 2, 1, 1, 0, 1, 0, 1, 1, 1, 2, 0, 0, 2, 1},
+        {2, 0, 0, 2, 1, 1, 2, 2, 1, 0, 2, 0, 0, 0, 0, 1, 2, 1, 2, 0, 0, 1, 0, 0},
+        {0, 2, 0, 2, 1, 1, 1, 1, 2, 1, 1, 0, 2, 2, 1, 2, 0, 2, 2, 1, 1, 0, 0, 1},
+        {1, 0, 2, 1, 0, 2, 1, 0, 0, 2, 0, 1, 1, 0, 1, 2, 1, 2, 0, 1, 0, 2, 2, 2},
+        {1, 1, 0, 1, 0, 2, 1, 0, 0, 2, 1, 1, 2, 1, 0, 1, 1, 2, 2, 0, 0, 2, 1, 0},
+        {2, 1, 0, 2, 1, 2, 2, 0, 1, 0, 1, 0, 2, 2, 0, 1, 0, 2, 1, 1, 0, 1, 2, 0},
+        {0, 2, 1, 2, 1, 1, 1, 0, 2, 0, 0, 0, 1, 0, 1, 1, 1, 2, 0, 2, 1, 1, 0, 0},
+        {0, 1, 0, 1, 0, 0, 1, 2, 1, 0, 2, 2, 0, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 1},
+        {1, 2, 2, 1, 0, 1, 2, 2, 0, 0, 1, 2, 2, 1, 1, 0, 0, 2, 0, 0, 1, 2, 2, 0},
+        {0, 2, 1, 1, 0, 0, 2, 0, 2, 0, 2, 1, 2, 2, 0, 1, 2, 0, 2, 0, 1, 0, 2, 1},
+        {2, 1, 1, 0, 0, 0, 1, 2, 0, 2, 1, 0, 2, 1, 0, 1, 2, 1, 0, 0, 1, 2, 2, 2},
+        {2, 0, 1, 2, 1, 1, 0, 1, 1, 2, 2, 0, 0, 2, 0, 1, 0, 0, 1, 1, 0, 2, 0, 1},
+        {1, 0, 1, 0, 2, 2, 0, 1, 1, 0, 2, 1, 0, 0, 1, 2, 1, 2, 0, 1, 2, 0, 0, 2},
+        {0, 2, 1, 0, 2, 2, 2, 0, 2, 1, 1, 1, 2, 0, 0, 1, 2, 1, 0, 1, 2, 1, 1, 0},
+        {1, 0, 2, 0, 1, 1, 0, 0, 0, 1, 1, 0, 2, 0, 0, 1, 1, 0, 1, 2, 0, 0, 1, 1}
     };
     Grass() {
         grass1 = LoadImage("./resources/decor/grass/grass-004.png");
@@ -67,13 +78,13 @@ class Grass {
         for(int row = 0; row<=cellVertical; row++) {
             for(int col = 0; col<=cellHorizontal; col++) {
                     if(grassMap[row][col]==0) {
-                        DrawTexture(grassTextureOne,col*cellSize,row*cellSize,WHITE);
+                        DrawTexture(grassTextureOne,col*cellSize*2,row*cellSize*2,WHITE);
                     }
                     if(grassMap[row][col]==1) {
-                        DrawTexture(grassTextureTwo,col*cellSize,row*cellSize,WHITE);
+                        DrawTexture(grassTextureTwo,col*cellSize*2,row*cellSize*2,WHITE);
                     }
                     if(grassMap[row][col]==2) {
-                        DrawTexture(grassTextureThree,col*cellSize,row*cellSize,WHITE);
+                        DrawTexture(grassTextureThree,col*cellSize*2,row*cellSize*2,WHITE);
                     }
             }
         }
@@ -83,34 +94,27 @@ class Tree {
     public:
     Texture2D treeTextureOne;
     Texture2D treeTextureTwo;
-    int treeMap[24][26] = {
-        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0,1, 1},
-        {1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0,1, 1},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,1, 1},
-        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,1, 1},
-        {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0,1, 1},
-        {0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,1, 1},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,1, 1},
-        {0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0,1, 1},
-        {0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1,1, 1},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0,1, 1},
-        {0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,1, 1},
-        {1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1,1, 1},
-        {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1, 1},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0,1, 1},
-        {0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0,1, 1},
-        {0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,1, 1},
-        {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,1, 1},
-        {0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,1, 1},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0,1, 1},
-        {0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,1, 1},
-        {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,1, 1},
-        {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1,1, 1}
-    };
+    int treeMap[16][16] = {
+    {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0},
+    {1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+    {1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0},
+    {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0},
+    {0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0},
+    {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+    {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, 0},
+    {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+    {0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1}
+};
+//25 42 -- 8 14
     Tree() {
-        treeTextureOne = LoadTexture("./resources/trees/tree-001.png");
+        treeTextureOne = LoadTexture("./resources/trees/tree-004.png");
         treeTextureTwo = LoadTexture("./resources/trees/tree-003.png");
     }
     ~Tree() {
@@ -120,14 +124,12 @@ class Tree {
     void draw() {
         int xTree;
         int yTree;
-        int xHitbox;
-        int yHitbox;
         bool tree = false;
-        for(int row = 0; row<cellVertical-1;row++) {
-            for(int col = 0; col<cellHorizontal;col++) {
+        for(int row = 0; row<16;row++) {
+            for(int col = 0; col<16;col++) {
                 tree = false;
-                xTree = (cellSize*col) - 8;
-                yTree = cellSize*row;
+                xTree = 48*col;
+                yTree = 48*row;
                 if(treeMap[row][col]==1) {
                     DrawTexture(treeTextureOne, xTree,yTree,WHITE);
                     tree = true;
@@ -136,7 +138,7 @@ class Tree {
                     DrawTexture(treeTextureTwo, xTree,yTree,WHITE);
                     tree = true;
                 }
-               //if(tree) {drawHitbox(xTree+8,yTree);};
+               //if(tree) {drawHitbox(xTree,yTree);};
             }
         }
     }
@@ -150,6 +152,7 @@ class Character {
     int y = 0;
     int xTile = 0;
     int yTile = 1;
+    int direction = 0;
 
     Image frontSpritesheet;
     Image front;
@@ -165,10 +168,10 @@ class Character {
     Texture rightTexture;
     Texture currentTexture;
     Character() {
-        frontSpritesheet = LoadImage("./resources/characters/character1/walk/front/spritesheet.png");
-        backSpritesheet = LoadImage("./resources/characters/character1/walk/back/spritesheet.png");
-        leftSpritesheet = LoadImage("./resources/characters/character1/walk/left/spritesheet.png");
-        rightSpritesheet = LoadImage("./resources/characters/character1/walk/right/spritesheet.png");
+        frontSpritesheet = LoadImage("./resources/characters/bren/walk/front/spritesheet.png");
+        backSpritesheet = LoadImage("./resources/characters/bren/walk/back/spritesheet.png");
+        leftSpritesheet = LoadImage("./resources/characters/bren/walk/left/spritesheet.png");
+        rightSpritesheet = LoadImage("./resources/characters/bren/walk/right/spritesheet.png");
         front = ImageFromImage(frontSpritesheet, Rectangle{8,0,16,32});
         back = ImageFromImage(backSpritesheet, Rectangle{8,0,16,32});
         left = ImageFromImage(leftSpritesheet, Rectangle{8,0,16,32});
@@ -194,104 +197,232 @@ class Character {
     void draw() {
         DrawTexture(currentTexture, x, y, WHITE);
     }
-    void update(int walkable[][48]) {
-        if(IsKeyPressed(KEY_DOWN) && walkable[yTile+1][xTile]==0) {
-            y+=16;
-            yTile+=1;
+    void movement(int walkable[][48]) {
+        if(IsKeyDown(KEY_DOWN) && TimePassed(.2)) {
+            if(walkable[yTile+1][xTile]==0) {
+                y+=16;
+                yTile+=1;
+            }
             currentTexture = frontTexture;
+            direction = 0;
         }
-        if(IsKeyPressed(KEY_UP)&& walkable[yTile-1][xTile]==0) {
-            y-=16;
-            yTile -=1;
+        else if(IsKeyDown(KEY_UP) && TimePassed(.2)) {
+            if(walkable[yTile-1][xTile]==0) {
+                y-=16;
+                yTile -=1;
+            }
             currentTexture = backTexture;
+            direction = 2;
         }
-        if(IsKeyPressed(KEY_LEFT) && walkable[yTile][xTile-1]==0) {
-            x-=16;
-            xTile -= 1;
+        else if(IsKeyDown(KEY_LEFT) && TimePassed(.2)) {
+            if(walkable[yTile][xTile-1]==0) {
+                x-=16;
+                xTile -= 1;
+            }
             currentTexture = leftTexture;
+            direction = 1;
         }
-        if(IsKeyPressed(KEY_RIGHT)&& walkable[yTile][xTile+1]==0) {
-            x+=16;
-            xTile += 1;
+        else if(IsKeyDown(KEY_RIGHT) && TimePassed(.2)) {
+            if(walkable[yTile][xTile+1]==0) {                
+                x+=16;
+                xTile += 1;
+            }
             currentTexture = rightTexture;
+            direction = 3;
+        }        
+    }
+    void update(int walkable[][48]) {
+        movement(walkable);
+    }
+};
+class Inventory {
+    public:
+    int inventory[9] = {};
+    int woodCount = 0;
+    void draw() {
+        DrawRectangle(cellSize*cellHorizontal/2-(cellSize*cellHorizontal/8), cellSize*cellVertical-32, cellSize*cellHorizontal/4, 32, DARKBROWN);
+        if(inventory[0] == 1) {
+            DrawText(TextFormat("%d x Wood", woodCount), cellSize*cellHorizontal/2-(cellSize*cellHorizontal/9),cellSize*cellVertical-26, 20, RAYWHITE);
         }
     }
 };
-
 class Game {
     public:
     Grass grass = Grass();
     Character main = Character();
     Tree tree = Tree();
-    int walkable[48][48] = {
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
-{1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0},
-{1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0},
-{1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0},
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0},
-{0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0},
-{1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0},
-{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-{1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1},
-{1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0},
-{0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1},
-{1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-{1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-{1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1},
-{1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1},
-{1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1},
-{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1},
-{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0},
-{0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-{0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0},
-{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1},
-{1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1},
-{1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1},
-{1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1},
-{1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1},
-{1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1},
-{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-{0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0},
-{0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0},
-{1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-};
+    Inventory inventory = Inventory();
+    int walkable[48][48] = {};
+    Texture2D thought = LoadTexture("./resources/thoughtbubble.png");
+    
+    void createTreeHitboxMap() {
+        int treeNum = 1;
+        for(int row = 0; row<16;row++) {
+            for(int col = 0; col<16;col++) {
+                if(tree.treeMap[row][col]==1 || tree.treeMap[row][col]==2) {
+                    treeNum = 1;
+                    for(int i =1;i<=3;i++) {
+                        for(int j =0;j<=2;j++) {
+                            walkable[(3*row)+i][(3*col)+j] = treeNum;
+                            treeNum++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void printTreeHitboxMap() {
+        printf("00{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7\n");
+        printf("{\n");
+        for(int row = 0; row<=47;row++) {
+            if(row<10) {
+                printf("0");
+            }
+            printf("%d", row);
+            printf("{");
+            for(int col = 0; col<=47;col++) {
+                printf("%d", walkable[row][col]);
+                if(col!=47) {
+                    printf(", ");
+                }
+            }
+            printf("},\n");
+        }
+        printf("};\n");
+    }
+
     void update() {
-        grass.renderBackground();
         main.update(walkable);
+        if(treeChoppable() && IsKeyPressed(KEY_SPACE)) {
+            treeChop();
+        }
     }
     void draw() {
         main.draw();
         tree.draw();
+        inventory.draw();
+        if(treeChoppable()) {
+            //cout << "choppable" << endl;
+            DrawTexture(thought,(cellSize*main.xTile)+12,(cellSize*main.yTile)-48,WHITE);
+            DrawText("would you like to chop tree?", (cellSize*main.xTile)+21,(cellSize*main.yTile)-32,7,BLACK);
+        }
+    }
+    bool treeChoppable() {
+        if(main.direction == 0) {
+            for(int i = 1;i<=3;i++) {
+                if(walkable[main.yTile+1][main.xTile]==i) {
+                    return true;
+                }
+            }
+        }
+        else if(main.direction == 1) {
+            for(int i = 3;i<=9;i+=3) {
+                if(walkable[main.yTile][main.xTile-1]==i) {
+                    return true;
+                }
+            }
+        }
+        else if(main.direction == 2) {
+            for(int i = 7;i<=9;i++) {
+                if(walkable[main.yTile-1][main.xTile]==i) {
+                    return true;
+                }
+            }
+        }
+        else if(main.direction == 3) {
+            for(int i = 1;i<=7;i+=3) {
+                if(walkable[main.yTile][main.xTile+1]==i) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    void deleteTree(int posY, int posX) {
+        walkable[posY][posX] = 0;
+        walkable[posY][posX+1] = 0;
+        walkable[posY][posX+2] = 0;
+        walkable[posY+1][posX] = 0;
+        walkable[posY+1][posX+1] = 0;
+        walkable[posY+1][posX+2] = 0;
+        walkable[posY+2][posX] = 0;
+        walkable[posY+2][posX+1] = 0;
+        walkable[posY+2][posX+2] = 0;
+    }
+    void treeChop() {
+        //facing down
+        if(main.direction == 0) {
+            if(walkable[main.yTile+1][main.xTile] == 1) {
+                deleteTree(main.yTile+1,main.xTile);
+            }
+            if(walkable[main.yTile+1][main.xTile] == 2) {
+                deleteTree(main.yTile+1,main.xTile-1);
+            }
+            if(walkable[main.yTile+1][main.xTile] == 3) {
+                deleteTree(main.yTile+1,main.xTile-2);
+            }
+            tree.treeMap[main.yTile/3][main.xTile/3] = 0;
+            inventory.inventory[0] = 1;
+            inventory.woodCount +=1;
+        }
+        else if(main.direction == 1) {
+            if(walkable[main.yTile][main.xTile-1] == 3) {
+                deleteTree(main.yTile,main.xTile-3);
+            }
+            if(walkable[main.yTile][main.xTile-1] == 6) {
+                deleteTree(main.yTile-1,main.xTile-3);
+            }
+            if(walkable[main.yTile][main.xTile-1] == 9) {
+                deleteTree(main.yTile-2,main.xTile-3);
+            }
+            tree.treeMap[(main.yTile-1)/3][(main.xTile-1)/3] = 0;
+            inventory.inventory[0] = 1;
+            inventory.woodCount +=1;
+        }
+        else if(main.direction == 2) {
+            if(walkable[main.yTile-1][main.xTile] == 7) {
+                deleteTree(main.yTile-3,main.xTile);
+            }
+            if(walkable[main.yTile-1][main.xTile] == 8) {
+                deleteTree(main.yTile-3,main.xTile-1);
+            }
+            if(walkable[main.yTile-1][main.xTile] == 9) {
+                deleteTree(main.yTile-3,main.xTile-2);
+            }
+            tree.treeMap[(main.yTile-2)/3][main.xTile/3] = 0;
+            inventory.inventory[0] = 1;
+            inventory.woodCount +=1;
+        }
+        else if(main.direction == 3) {
+            if(walkable[main.yTile][main.xTile+1] == 1) {
+                deleteTree(main.yTile,main.xTile+1);
+            }
+            if(walkable[main.yTile][main.xTile+1] == 4) {
+                deleteTree(main.yTile-1,main.xTile+1);
+            }
+            if(walkable[main.yTile][main.xTile+1] == 7) {
+                deleteTree(main.yTile-2,main.xTile+1);
+            }
+            tree.treeMap[(main.yTile-1)/3][(main.xTile+2)/3] = 0;
+            inventory.inventory[0] = 1;
+            inventory.woodCount +=1;
+        }
     }
 };
 
 int main() {
-    InitWindow((cellSize*(cellVertical+3)-16), cellSize*cellVertical, "farm time");
-    SetWindowPosition(200, 200);   
+    InitWindow(cellSize*(cellHorizontal), cellSize*cellVertical, "farm time");
+    SetWindowPosition(50, 50);   
     SetTargetFPS(60);
     Game game = Game();
+    game.createTreeHitboxMap();
+    game.printTreeHitboxMap();
 
     while(!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground((Color){170,246,131,0});
+        game.grass.renderBackground();
         game.update();
         game.draw();
         EndDrawing();
