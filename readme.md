@@ -2,13 +2,13 @@
 * Personal top-down, 2D farming game
 * Written in C++ with the raylib library
 
-## 1. COMPILE
+## 1. COMPILE IN SRC FOLDER
+```bash
+make
 ```
-clang++ main.cpp Grass.cpp config.cpp -std=c++11 -lraylib -o main
-```
-## 2. RUN
-```
-./main
+## 2. RUN IN SRC FOLDER
+```bash
+./game
 ```
 
 # CHANGELOG AND FEATURES
@@ -30,6 +30,10 @@ clang++ main.cpp Grass.cpp config.cpp -std=c++11 -lraylib -o main
 ### Natural player movement
 * Player movement has been changed to be hold to move (previously tap).
 * eliminated the possibility for diagonal moves by consecutively holding buttons.
+
+### Some Modularity Refactoring
+* Class files separated into ".h" and ".cpp" files
+* Compile now with ```make```
 
 ## IDEAS
 
