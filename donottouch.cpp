@@ -253,7 +253,6 @@ class Game {
     Tree tree = Tree();
     Inventory inventory = Inventory();
     int walkable[48][48] = {};
-    Texture2D thought = LoadTexture("./resources/thoughtbubble.png");
     
     void createTreeHitboxMap() {
         int treeNum = 1;
@@ -304,7 +303,6 @@ class Game {
         inventory.draw();
         if(treeChoppable()) {
             //cout << "choppable" << endl;
-            DrawTexture(thought,(cellSize*main.xTile)+12,(cellSize*main.yTile)-48,WHITE);
             DrawText("would you like to chop tree?", (cellSize*main.xTile)+21,(cellSize*main.yTile)-32,7,BLACK);
         }
     }

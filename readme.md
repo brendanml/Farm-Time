@@ -4,7 +4,7 @@
 
 ## 1. COMPILE
 ```
-clang++ main.cpp -std=c++11 -lraylib -o main
+clang++ main.cpp Grass.cpp config.cpp -std=c++11 -lraylib -o main
 ```
 ## 2. RUN
 ```
