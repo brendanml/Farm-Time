@@ -7,118 +7,12 @@
 #include "config.h"
 #include "grass.h"
 #include "tree.h"
+#include "config.h"
+#include "character.h"
+#include "inventory.h"
 
 using namespace std;    
 
-bool TimePassed(double interval) {
-    double currentTime = GetTime();
-    if(currentTime-lastUpdateTime>=interval) {
-        lastUpdateTime = currentTime;
-        return true;
-    }
-    return false;
-}
-
-class Character {
-    public:
-    int x = 0;
-    int y = 0;
-    int xTile = 0;
-    int yTile = 1;
-    int direction = 0;
-
-    Image frontSpritesheet;
-    Image front;
-    Texture frontTexture;
-    Image backSpritesheet;
-    Image back;
-    Texture backTexture;
-    Image leftSpritesheet;
-    Image left;
-    Texture leftTexture;
-    Image rightSpritesheet;
-    Image right;
-    Texture rightTexture;
-    Texture currentTexture;
-    Character() {
-        frontSpritesheet = LoadImage("../resources/characters/bren/walk/front/spritesheet.png");
-        backSpritesheet = LoadImage("../resources/characters/bren/walk/back/spritesheet.png");
-        leftSpritesheet = LoadImage("../resources/characters/bren/walk/left/spritesheet.png");
-        rightSpritesheet = LoadImage("../resources/characters/bren/walk/right/spritesheet.png");
-        front = ImageFromImage(frontSpritesheet, Rectangle{8,0,16,32});
-        back = ImageFromImage(backSpritesheet, Rectangle{8,0,16,32});
-        left = ImageFromImage(leftSpritesheet, Rectangle{8,0,16,32});
-        right = ImageFromImage(rightSpritesheet, Rectangle{8,0,16,32});
-        UnloadImage(frontSpritesheet);
-        UnloadImage(backSpritesheet);
-        UnloadImage(leftSpritesheet);
-        UnloadImage(rightSpritesheet);
-        frontTexture = LoadTextureFromImage(front);
-        backTexture = LoadTextureFromImage(back);
-        leftTexture = LoadTextureFromImage(left);
-        rightTexture = LoadTextureFromImage(right);
-        UnloadImage(front);
-        UnloadImage(back);
-        UnloadImage(left);
-        UnloadImage(right);
-        currentTexture = frontTexture;
-    }
-    ~Character() {
-        UnloadTexture(frontTexture);
-        UnloadTexture(backTexture);
-    }
-    void draw() {
-        DrawTexture(currentTexture, x, y, WHITE);
-    }
-    void movement(int walkable[][48]) {
-        if(IsKeyDown(KEY_DOWN) && TimePassed(.2)) {
-            if(walkable[yTile+1][xTile]==0) {
-                y+=16;
-                yTile+=1;
-            }
-            currentTexture = frontTexture;
-            direction = 0;
-        }
-        else if(IsKeyDown(KEY_UP) && TimePassed(.2)) {
-            if(walkable[yTile-1][xTile]==0) {
-                y-=16;
-                yTile -=1;
-            }
-            currentTexture = backTexture;
-            direction = 2;
-        }
-        else if(IsKeyDown(KEY_LEFT) && TimePassed(.2)) {
-            if(walkable[yTile][xTile-1]==0) {
-                x-=16;
-                xTile -= 1;
-            }
-            currentTexture = leftTexture;
-            direction = 1;
-        }
-        else if(IsKeyDown(KEY_RIGHT) && TimePassed(.2)) {
-            if(walkable[yTile][xTile+1]==0) {                
-                x+=16;
-                xTile += 1;
-            }
-            currentTexture = rightTexture;
-            direction = 3;
-        }        
-    }
-    void update(int walkable[][48]) {
-        movement(walkable);
-    }
-};
-class Inventory {
-    public:
-    int inventory[9] = {};
-    int woodCount = 0;
-    void draw() {
-        DrawRectangle(cellSize*cellHorizontal/2-(cellSize*cellHorizontal/8), cellSize*cellVertical-32, cellSize*cellHorizontal/4, 32, DARKBROWN);
-        if(inventory[0] == 1) {
-            DrawText(TextFormat("%d x Wood", woodCount), cellSize*cellHorizontal/2-(cellSize*cellHorizontal/9),cellSize*cellVertical-26, 20, RAYWHITE);
-        }
-    }
-};
 class Game {
     public:
     Grass grass = Grass();

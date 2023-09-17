@@ -7,7 +7,7 @@ CXX = clang++
 CXXFLAGS = -std=c++11 -Wall -lraylib
 
 # Source file and executable name
-SRCS = main.cpp grass.cpp config.cpp tree.cpp
+SRCS = main.cpp grass.cpp config.cpp tree.cpp character.cpp inventory.cpp
 EXEC = game
 
 # Build target
