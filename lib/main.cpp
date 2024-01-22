@@ -69,7 +69,8 @@ class Game {
         inventory.draw();
         if(treeChoppable()) {
             //cout << "choppable" << endl;
-            DrawText("would you like to chop tree?", (cellSize*main.xTile)+21,(cellSize*main.yTile)-32,7,BLACK);
+            DrawRectangle((cellSize*main.xTile)+15,(cellSize*main.yTile)-37, 240, 26, RAYWHITE);
+            DrawText("...should I press spacebar to chop the tree?", (cellSize*main.xTile)+21,(cellSize*main.yTile)-32,7,BLACK);
         }
     }
     bool treeChoppable() {

@@ -3,6 +3,7 @@
         "*.ejs": "html",
         "__node_handle": "cpp",
         "deque": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "cstdlib": "cpp"
     }
 }
